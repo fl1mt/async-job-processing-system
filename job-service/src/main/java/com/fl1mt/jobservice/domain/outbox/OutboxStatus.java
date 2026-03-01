@@ -1,4 +1,4 @@
-package com.fl1mt.jobservice.domain;
+package com.fl1mt.jobservice.domain.outbox;
 
 public enum OutboxStatus {
     NEW,

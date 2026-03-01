@@ -1,6 +1,5 @@
 package com.fl1mt.jobservice.domain.outbox;
 
-import com.fl1mt.jobservice.domain.OutboxStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;

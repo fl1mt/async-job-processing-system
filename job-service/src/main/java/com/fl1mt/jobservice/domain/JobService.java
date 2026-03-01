@@ -2,6 +2,7 @@ package com.fl1mt.jobservice.domain;
 
 import com.fl1mt.jobservice.domain.outbox.OutboxEvent;
 import com.fl1mt.jobservice.domain.outbox.OutboxEventJpaRepository;
+import com.fl1mt.jobservice.domain.outbox.OutboxStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,5 +50,10 @@ public class JobService {
 
     public List<JobResponse> getJobs() {
         return jobMapper.toListResponse(jobJpaRepository.findAll());
+    }
+    public JobResponse getJob(Long jobId){
+        Job job = jobJpaRepository.findById(jobId)
+                .orElseThrow(() -> new RuntimeException("Job not found!"));
+        return jobMapper.toResponse(job);
     }
 }
