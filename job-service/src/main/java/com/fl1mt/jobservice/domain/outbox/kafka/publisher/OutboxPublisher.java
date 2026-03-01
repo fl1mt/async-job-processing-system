@@ -20,21 +20,49 @@ public class OutboxPublisher {
     private final OutboxEventJpaRepository outboxEventJpaRepository;
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
-    @Transactional
     @Scheduled(fixedDelay = 5000)
-    public void publishEvents(){
-        List<OutboxEvent> events = outboxEventJpaRepository.findTop50ByStatusOrderByCreatedAtAsc(OutboxStatus.NEW);
+    @Transactional
+    public void publishEvents() {
 
-        for(OutboxEvent event : events){
-            JobCreatedEvent kafkaEvent = new JobCreatedEvent(event.getAggregateId(), event.getPayload());
-            kafkaTemplate.send(
-                    "job-created-topic",
-                    kafkaEvent
-            );
+        List<OutboxEvent> events =
+                outboxEventJpaRepository.findTop50ByStatusOrderByCreatedAtAsc(OutboxStatus.NEW);
 
-            event.setStatus(OutboxStatus.SENT);
+        sendKafkaEvents(events);
+    }
 
-            log.info("JOB SERVICE. Sending JobCreated kafka event to worker-service: {}", kafkaEvent);
+    @Scheduled(fixedDelay = 15000)
+    @Transactional
+    public void retryFailedEvents() {
+
+        List<OutboxEvent> events =
+                outboxEventJpaRepository.findTop50ByStatusOrderByCreatedAtAsc(OutboxStatus.FAILED);
+
+        sendKafkaEvents(events);
+    }
+
+    private void sendKafkaEvents(List<OutboxEvent> events) {
+
+        for (OutboxEvent event : events) {
+
+            JobCreatedEvent kafkaEvent =
+                    new JobCreatedEvent(event.getAggregateId(), event.getPayload());
+
+            try {
+
+                kafkaTemplate
+                        .send("job-created-topic", kafkaEvent)
+                        .get();
+
+                event.setStatus(OutboxStatus.SENT);
+
+                log.info("JOB SERVICE. JobCreated kafka event sent to worker-service: {}", kafkaEvent);
+
+            } catch (Exception e) {
+
+                event.setStatus(OutboxStatus.FAILED);
+
+                log.error("JOB SERVICE. Failed to send JobCreated kafka event to worker-service: {}", kafkaEvent, e);
+            }
         }
     }
 }
