@@ -34,7 +34,7 @@ public class OutboxPublisher {
 
             event.setStatus(OutboxStatus.SENT);
 
-            log.info("Sending event to kafka: {}", kafkaEvent);
+            log.info("JOB SERVICE. Sending JobCreated kafka event to worker-service: {}", kafkaEvent);
         }
     }
 }

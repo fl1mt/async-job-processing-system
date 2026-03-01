@@ -13,7 +13,7 @@ public class JobStartedPublisher {
 
     public void publishJobStartedEvent(Long jobId){
         JobStartedEvent jobStartedEvent = new JobStartedEvent(jobId);
-        log.info("Sending job started event to kafka job-service: {}", "job ID:" + jobStartedEvent);
+        log.info("WORKER SERVICE. Sending JobStarted kafka event to job-service. Job ID: " + jobStartedEvent.jobId());
 
         kafkaTemplate.send(
                 "job-started-topic",

@@ -19,7 +19,7 @@ public class OutboxEventConsumer {
             groupId = "worker-service"
     )
     public void consume(JobCreatedEvent event){
-        log.info("Received event to kafka worker service: {}", event);
+        log.info("WORKER SERVICE. Received JobCreated kafka event from job-service: {}", event);
         jobStartedPublisher.publishJobStartedEvent(event.jobId());
     }
 }

@@ -27,6 +27,6 @@ public class JobStartedConsumer {
         Job job = jobJpaRepository.findById(event.jobId())
                 .orElseThrow(() -> new RuntimeException("Job not found!"));
         job.setStatus(JobStatus.IN_PROGRESS);
-        log.info("Received event to kafka job service: " + "job ID "+ job.getId() + " with status: " + job.getStatus());
+        log.info("JOB SERVICE. Received JobStarted kafka event from worker-service. Job ID: "+ job.getId() + " with status: " + job.getStatus());
     }
 }
