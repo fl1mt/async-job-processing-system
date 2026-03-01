@@ -16,6 +16,7 @@
     <modules>
         <module>job-service</module>
         <module>worker-service</module>
+        <module>common-events</module>
     </modules>
 
     <properties>
