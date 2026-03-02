@@ -1,6 +1,6 @@
 package com.fl1mt.jobservice.domain;
 
-import com.fl1mt.jobservice.domain.outbox.OutboxEvent;
+import com.fl1mt.jobservice.domain.outbox.JobOutboxEvent;
 import com.fl1mt.jobservice.domain.outbox.OutboxEventJpaRepository;
 import com.fl1mt.jobservice.domain.outbox.OutboxStatus;
 import org.springframework.stereotype.Service;
@@ -29,12 +29,12 @@ public class JobService {
         job.setResult(0L);
         jobJpaRepository.save(job);
 
-        OutboxEvent outboxEvent = new OutboxEvent();
-        outboxEvent.setEventId(UUID.randomUUID());
-        outboxEvent.setEventType("JOB_CREATED");
-        outboxEvent.setAggregateType("JOB");
-        outboxEvent.setAggregateId(job.getId());
-        outboxEvent.setStatus(OutboxStatus.NEW);
+        JobOutboxEvent jobOutboxEvent = new JobOutboxEvent();
+        jobOutboxEvent.setEventId(UUID.randomUUID());
+        jobOutboxEvent.setEventType("JOB_CREATED");
+        jobOutboxEvent.setAggregateType("JOB");
+        jobOutboxEvent.setAggregateId(job.getId());
+        jobOutboxEvent.setStatus(OutboxStatus.NEW);
 
         String payload = """
                 {
@@ -42,8 +42,8 @@ public class JobService {
                 "payload": %d
                 }
                 """.formatted(job.getId(), job.getPayload());
-        outboxEvent.setPayload(payload);
-        outboxEventJpaRepository.save(outboxEvent);
+        jobOutboxEvent.setPayload(payload);
+        outboxEventJpaRepository.save(jobOutboxEvent);
 
         return jobMapper.toResponse(job);
     }

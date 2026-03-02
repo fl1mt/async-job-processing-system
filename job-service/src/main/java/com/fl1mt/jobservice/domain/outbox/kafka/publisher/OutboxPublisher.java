@@ -1,6 +1,7 @@
 package com.fl1mt.jobservice.domain.outbox.kafka.publisher;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fl1mt.events.JobCreatedEvent;
-import com.fl1mt.jobservice.domain.outbox.OutboxEvent;
+import com.fl1mt.jobservice.domain.outbox.JobOutboxEvent;
 import com.fl1mt.jobservice.domain.outbox.OutboxEventJpaRepository;
 import com.fl1mt.jobservice.domain.outbox.OutboxStatus;
 import lombok.RequiredArgsConstructor;
@@ -19,12 +20,13 @@ import java.util.List;
 public class OutboxPublisher {
     private final OutboxEventJpaRepository outboxEventJpaRepository;
     private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final ObjectMapper objectMapper;
 
     @Scheduled(fixedDelay = 5000)
     @Transactional
     public void publishEvents() {
 
-        List<OutboxEvent> events =
+        List<JobOutboxEvent> events =
                 outboxEventJpaRepository.findTop50ByStatusOrderByCreatedAtAsc(OutboxStatus.NEW);
 
         sendKafkaEvents(events);
@@ -34,34 +36,28 @@ public class OutboxPublisher {
     @Transactional
     public void retryFailedEvents() {
 
-        List<OutboxEvent> events =
+        List<JobOutboxEvent> events =
                 outboxEventJpaRepository.findTop50ByStatusOrderByCreatedAtAsc(OutboxStatus.FAILED);
 
         sendKafkaEvents(events);
     }
 
-    private void sendKafkaEvents(List<OutboxEvent> events) {
+    private void sendKafkaEvents(List<JobOutboxEvent> events) {
 
-        for (OutboxEvent event : events) {
-
-            JobCreatedEvent kafkaEvent =
-                    new JobCreatedEvent(event.getAggregateId(), event.getPayload());
-
+        for (JobOutboxEvent event : events) {
             try {
+                JobCreatedEvent kafkaEvent = objectMapper.readValue(event.getPayload(), JobCreatedEvent.class);
 
                 kafkaTemplate
                         .send("job-created-topic", kafkaEvent)
                         .get();
 
                 event.setStatus(OutboxStatus.SENT);
-
                 log.info("JOB SERVICE. JobCreated kafka event sent to worker-service: {}", kafkaEvent);
 
             } catch (Exception e) {
-
                 event.setStatus(OutboxStatus.FAILED);
-
-                log.error("JOB SERVICE. Failed to send JobCreated kafka event to worker-service: {}", kafkaEvent, e);
+                log.error("JOB SERVICE. Failed to send JobCreated kafka event to worker-service: {}", e);
             }
         }
     }

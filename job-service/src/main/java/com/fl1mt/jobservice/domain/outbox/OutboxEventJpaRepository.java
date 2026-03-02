@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.Lock;
 
 import java.util.List;
 
-public interface OutboxEventJpaRepository extends JpaRepository<OutboxEvent, Long> {
+public interface OutboxEventJpaRepository extends JpaRepository<JobOutboxEvent, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    List<OutboxEvent> findTop50ByStatusOrderByCreatedAtAsc(OutboxStatus outboxStatus);
+    List<JobOutboxEvent> findTop50ByStatusOrderByCreatedAtAsc(OutboxStatus outboxStatus);
 }

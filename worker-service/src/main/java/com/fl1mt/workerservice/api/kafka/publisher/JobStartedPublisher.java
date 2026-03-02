@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.ExecutionException;
+
 @Component
 @Slf4j
 @RequiredArgsConstructor
@@ -15,10 +17,12 @@ public class JobStartedPublisher {
         JobStartedEvent jobStartedEvent = new JobStartedEvent(jobId);
         log.info("WORKER SERVICE. Sending JobStarted kafka event to job-service. Job ID: " + jobStartedEvent.jobId());
 
-        kafkaTemplate.send(
-                "job-started-topic",
-                jobStartedEvent
-        );
+        try {
+            kafkaTemplate.send(
+                    "job-started-topic", jobStartedEvent).get();
+        } catch (Exception e) {
+            log.error("WORKER SERVICE. Failed to send JobStarted kafka event to job-service: {}", e);
+        }
     }
 
 }
