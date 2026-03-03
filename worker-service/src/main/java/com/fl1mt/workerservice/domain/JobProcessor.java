@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigInteger;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -17,10 +18,10 @@ public class JobProcessor {
     private final WorkerOutboxEventJpaRepository repository;
 
     @Transactional
-    public long process(JobCreatedEvent event){
-        long result = calculate(event.payload());
+    public BigInteger process(JobCreatedEvent event){
+        BigInteger result = calculate(event.payload());
 
-        if (result <= 0){
+        if (result.compareTo(BigInteger.ZERO) <= 0){
             throw new RuntimeException("Result must be more than 0!");
         }
 
@@ -35,7 +36,7 @@ public class JobProcessor {
         return result;
     }
 
-    private long calculate(long num){
+    private BigInteger calculate(long num){
         long n = num;
         long parts = n / 4;
 
@@ -46,7 +47,7 @@ public class JobProcessor {
 
         CompletableFuture.allOf(p1, p2, p3, p4).join();
 
-        return p1.join() + p2.join() + p3.join() + p4.join();
+        return BigInteger.valueOf(p1.join() + p2.join() + p3.join() + p4.join());
     }
 
     private long sum(long start, long end) {

@@ -5,6 +5,7 @@ import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -34,7 +35,7 @@ public class WorkerOutboxEvent {
     private String eventType;
 
     @Column(name = "result", nullable = false)
-    private Long result;
+    private BigInteger result;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
