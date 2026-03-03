@@ -1,4 +1,6 @@
-package com.fl1mt.jobservice.domain;
+package com.fl1mt.jobservice.api;
+
+import com.fl1mt.jobservice.domain.JobStatus;
 
 import java.time.LocalDateTime;
 

@@ -1,4 +1,4 @@
-package com.fl1mt.jobservice.domain.outbox.kafka.consumer;
+package com.fl1mt.jobservice.kafka.consumer;
 
 import com.fl1mt.events.JobCompletedEvent;
 import com.fl1mt.events.JobStartedEvent;

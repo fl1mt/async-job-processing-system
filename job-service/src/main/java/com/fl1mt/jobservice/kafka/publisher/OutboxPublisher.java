@@ -1,4 +1,4 @@
-package com.fl1mt.jobservice.domain.outbox.kafka.publisher;
+package com.fl1mt.jobservice.kafka.publisher;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fl1mt.events.JobCreatedEvent;
 import com.fl1mt.jobservice.domain.outbox.JobOutboxEvent;

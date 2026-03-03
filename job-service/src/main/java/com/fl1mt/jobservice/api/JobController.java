@@ -1,8 +1,6 @@
 package com.fl1mt.jobservice.api;
 
 
-import com.fl1mt.jobservice.domain.CreateJobRequest;
-import com.fl1mt.jobservice.domain.JobResponse;
 import com.fl1mt.jobservice.domain.JobService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;

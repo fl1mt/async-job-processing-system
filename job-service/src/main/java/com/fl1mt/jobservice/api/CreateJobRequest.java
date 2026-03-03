@@ -1,4 +1,4 @@
-package com.fl1mt.jobservice.domain;
+package com.fl1mt.jobservice.api;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;

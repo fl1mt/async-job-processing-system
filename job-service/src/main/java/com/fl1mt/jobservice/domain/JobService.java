@@ -1,5 +1,7 @@
 package com.fl1mt.jobservice.domain;
 
+import com.fl1mt.jobservice.api.CreateJobRequest;
+import com.fl1mt.jobservice.api.JobResponse;
 import com.fl1mt.jobservice.domain.outbox.JobOutboxEvent;
 import com.fl1mt.jobservice.domain.outbox.OutboxEventJpaRepository;
 import com.fl1mt.jobservice.domain.outbox.OutboxStatus;

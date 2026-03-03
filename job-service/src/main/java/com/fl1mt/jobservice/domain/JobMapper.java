@@ -1,6 +1,8 @@
 package com.fl1mt.jobservice.domain;
 
 
+import com.fl1mt.jobservice.api.CreateJobRequest;
+import com.fl1mt.jobservice.api.JobResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
