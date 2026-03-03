@@ -18,7 +18,7 @@ public class JobProcessor {
     private final WorkerOutboxEventJpaRepository repository;
 
     @Transactional
-    public BigInteger process(JobCreatedEvent event){
+     public BigInteger process(JobCreatedEvent event){
         BigInteger result = calculate(event.payload());
 
         if (result.compareTo(BigInteger.ZERO) <= 0){
@@ -36,28 +36,40 @@ public class JobProcessor {
         return result;
     }
 
-    private BigInteger calculate(long num){
-        long n = num;
+    private BigInteger calculate(long n){
+
         long parts = n / 4;
 
-        CompletableFuture<Long> p1 = CompletableFuture.supplyAsync(() -> sum(1, parts));
-        CompletableFuture<Long> p2 = CompletableFuture.supplyAsync(() -> sum(parts + 1, parts * 2));
-        CompletableFuture<Long> p3 = CompletableFuture.supplyAsync(() -> sum(parts * 2 + 1, parts * 3));
-        CompletableFuture<Long> p4 = CompletableFuture.supplyAsync(() -> sum(parts * 3 + 1, n));
+        CompletableFuture<BigInteger> p1 =
+                CompletableFuture.supplyAsync(() -> sumFormula(1, parts));
+
+        CompletableFuture<BigInteger> p2 =
+                CompletableFuture.supplyAsync(() -> sumFormula(parts + 1, parts * 2));
+
+        CompletableFuture<BigInteger> p3 =
+                CompletableFuture.supplyAsync(() -> sumFormula(parts * 2 + 1, parts * 3));
+
+        CompletableFuture<BigInteger> p4 =
+                CompletableFuture.supplyAsync(() -> sumFormula(parts * 3 + 1, n));
 
         CompletableFuture.allOf(p1, p2, p3, p4).join();
 
-        return BigInteger.valueOf(p1.join() + p2.join() + p3.join() + p4.join());
+        return p1.join()
+                .add(p2.join())
+                .add(p3.join())
+                .add(p4.join());
     }
 
-    private long sum(long start, long end) {
+    private BigInteger sumFormula(long start, long end){
 
-        long result = 0;
+        BigInteger a = BigInteger.valueOf(end)
+                .multiply(BigInteger.valueOf(end + 1))
+                .divide(BigInteger.valueOf(2));
 
-        for (long i = start; i <= end; i++) {
-            result += i;
-        }
+        BigInteger b = BigInteger.valueOf(start - 1)
+                .multiply(BigInteger.valueOf(start))
+                .divide(BigInteger.valueOf(2));
 
-        return result;
+        return a.subtract(b);
     }
 }

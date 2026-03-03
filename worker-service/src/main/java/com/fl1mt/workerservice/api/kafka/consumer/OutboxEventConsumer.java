@@ -6,6 +6,7 @@ import com.fl1mt.workerservice.domain.JobProcessor;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,9 +28,9 @@ public class OutboxEventConsumer {
     )
     public void consume(JobCreatedEvent event) {
         log.info("WORKER SERVICE. Received JobCreated kafka event from job-service: {}", event);
-        jobStartedPublisher.publishJobStartedEvent(event.jobId());
         executorService.submit(() -> {
             try{
+                jobStartedPublisher.publishJobStartedEvent(event.jobId());
                 jobProcessor.process(event);
             } catch (Exception e){
                 jobFailedPublisher.publishJobFailedEvent(event.jobId());
