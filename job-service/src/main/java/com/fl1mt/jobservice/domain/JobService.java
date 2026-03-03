@@ -6,6 +6,7 @@ import com.fl1mt.jobservice.domain.outbox.OutboxStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,7 +27,7 @@ public class JobService {
     public JobResponse createJob(CreateJobRequest request){
         Job job = jobMapper.toEntity(request);
         job.setStatus(JobStatus.CREATED);
-        job.setResult(0L);
+        job.setResult(BigInteger.ZERO);
         jobJpaRepository.save(job);
 
         JobOutboxEvent jobOutboxEvent = new JobOutboxEvent();

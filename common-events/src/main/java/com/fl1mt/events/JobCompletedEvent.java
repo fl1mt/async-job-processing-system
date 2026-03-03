@@ -1,4 +1,6 @@
 package com.fl1mt.events;
 
-public record JobCompletedEvent (Long jobId, Long result) {
+import java.math.BigInteger;
+
+public record JobCompletedEvent (Long jobId, BigInteger result) {
 }
