@@ -1,5 +1,6 @@
 package com.fl1mt.workerservice.api.kafka.consumer;
 import com.fl1mt.events.JobCreatedEvent;
+import com.fl1mt.workerservice.api.kafka.publisher.JobFailedPublisher;
 import com.fl1mt.workerservice.api.kafka.publisher.JobStartedPublisher;
 import com.fl1mt.workerservice.domain.JobProcessor;
 import lombok.*;
@@ -16,6 +17,7 @@ import java.util.concurrent.ExecutorService;
 public class OutboxEventConsumer {
 
     private final JobStartedPublisher jobStartedPublisher;
+    private final JobFailedPublisher jobFailedPublisher;
     private final ExecutorService executorService;
     private final JobProcessor jobProcessor;
     @Transactional
@@ -30,7 +32,7 @@ public class OutboxEventConsumer {
             try{
                 jobProcessor.process(event);
             } catch (Exception e){
-                // job failed publisher
+                jobFailedPublisher.publishJobFailedEvent(event.jobId());
                 log.info("WORKER SERVICE. Failed to complete job. Job id: " + event.jobId() +
                         "\n" + e);
             }
