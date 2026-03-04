@@ -31,4 +31,9 @@ public class JobController {
     public ResponseEntity<JobResponse> getJob(@PathVariable(name = "jobId") Long jobId){
         return ResponseEntity.ok(jobService.getJob(jobId));
     }
+
+    @GetMapping("/{jobId}/status")
+    public ResponseEntity<JobStatusResponse> getJobStatus(@PathVariable(name = "jobId") Long jobId){
+        return ResponseEntity.ok(jobService.getJobStatus(jobId));
+    }
 }
